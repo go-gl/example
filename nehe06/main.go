@@ -9,6 +9,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/andrebq/gas"
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glfw"
 	"github.com/go-gl/glu"
@@ -25,10 +26,12 @@ var (
 	running      bool
 	rotation     [3]float32
 	textures     []gl.Texture
-	texturefiles = []string{
-		"../data/NeHe.tga",
-	}
+	texturefiles [1]string
 )
+
+func init() {
+	texturefiles[0], _ = gas.Abs("github.com/go-gl/examples/data/NeHe.tga")
+}
 
 func main() {
 	var err error
