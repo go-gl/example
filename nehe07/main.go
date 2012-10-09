@@ -9,6 +9,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/andrebq/gas"
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glfw"
 	"github.com/go-gl/glu"
@@ -22,18 +23,22 @@ const (
 )
 
 var (
-	running     bool
-	textures    []gl.Texture = make([]gl.Texture, 3)
-	texturefile string       = "../data/Crate.tga"
-	light       bool                                       // Display light?
-	rotation    [2]float32                                 // X/Y rotation.
-	speed       [2]float32                                 // X/Y speed.
-	z           float32      = -5                          // Depth into the scene.
-	ambient     []float32    = []float32{0.5, 0.5, 0.5, 1} // ambient light colour.
-	diffuse     []float32    = []float32{1, 1, 1, 1}       // diffuse light colour.
-	lightpos    []float32    = []float32{0, 0, 2, 1}       // Position of light source.
-	filter      int                                        // Index of current texture to display.
+	running      bool
+	textures     []gl.Texture = make([]gl.Texture, 3)
+	texturefiles [1]string
+	light        bool                                     // Display light?
+	rotation     [2]float32                               // X/Y rotation.
+	speed        [2]float32                               // X/Y speed.
+	z            float32    = -5                          // Depth into the scene.
+	ambient      []float32  = []float32{0.5, 0.5, 0.5, 1} // ambient light colour.
+	diffuse      []float32  = []float32{1, 1, 1, 1}       // diffuse light colour.
+	lightpos     []float32  = []float32{0, 0, 2, 1}       // Position of light source.
+	filter       int                                      // Index of current texture to display.
 )
+
+func init() {
+	texturefiles[0], _ = gas.Abs("github.com/go-gl/examples/data/Crate.tga")
+}
 
 func main() {
 	var err error
@@ -146,8 +151,8 @@ func loadTextures() (err error) {
 	// Texture 1
 	textures[0].Bind(gl.TEXTURE_2D)
 
-	if !glfw.LoadTexture2D(texturefile, 0) {
-		return errors.New("Failed to load texture: " + texturefile)
+	if !glfw.LoadTexture2D(texturefiles[0], 0) {
+		return errors.New("Failed to load texture: " + texturefiles[0])
 	}
 
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
@@ -156,8 +161,8 @@ func loadTextures() (err error) {
 	// Texture 2
 	textures[1].Bind(gl.TEXTURE_2D)
 
-	if !glfw.LoadTexture2D(texturefile, 0) {
-		return errors.New("Failed to load texture: " + texturefile)
+	if !glfw.LoadTexture2D(texturefiles[0], 0) {
+		return errors.New("Failed to load texture: " + texturefiles[0])
 	}
 
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
@@ -166,8 +171,8 @@ func loadTextures() (err error) {
 	// Texture 3
 	textures[2].Bind(gl.TEXTURE_2D)
 
-	if !glfw.LoadTexture2D(texturefile, glfw.BuildMipmapsBit) {
-		return errors.New("Failed to load texture: " + texturefile)
+	if !glfw.LoadTexture2D(texturefiles[0], glfw.BuildMipmapsBit) {
+		return errors.New("Failed to load texture: " + texturefiles[0])
 	}
 
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
