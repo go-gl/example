@@ -63,6 +63,20 @@ func runExample(t *testing.T, path string, files []string) {
 		}
 		time.Sleep(sleeptime)
 		done = true
+
+		defer func() {
+			e := recover()
+			if e == nil {
+				return
+			}
+			err, ok := e.(error)
+			if !ok {
+				panic(e)
+			}
+			if err.Error() != "os: process already finished" {
+				panic(err)
+			}
+		}()
 		err := cmd.Process.Kill()
 		if err != nil {
 			panic(err)
