@@ -78,9 +78,23 @@ func runExample(t *testing.T, path string, files []string) {
 	}
 }
 
+func goInstall() {
+	install := exec.Command("go", "install", "-v")
+	install.Stdout = os.Stdout
+	install.Stderr = os.Stderr
+	err := install.Run()
+	if err != nil {
+		panic(err)
+	}
+}
+
 // Runs all examples in turn using "go build" and "dirname/dirname".
 // They run in an arbitrary order.
 func TestExamples(t *testing.T) {
+	// Required to ensure that the test assets are available at the right path.
+	// Maybe this should be moved into the test helper scripts..
+	goInstall()
+
 	example_files := map[string][]string{}
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		dir := filepath.Dir(path)
