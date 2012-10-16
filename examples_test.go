@@ -28,15 +28,27 @@ var runtimes = map[string]time.Duration{
 	"nehe03": 5 * time.Second,
 }
 
+func runTest(t *testing.T, path string) {
+	println(strings.Repeat("=", 80))
+	println("-- subtest: ", path)
+	test := exec.Command("go", "test", "-v", "./"+path)
+	test.Stdout, test.Stderr = os.Stdout, os.Stderr
+
+	err := test.Run()
+	if err != nil {
+		t.Fatal("Failed to run 'go test': ", err)
+	}
+}
+
 func runExample(t *testing.T, path string, files []string) {
 	println(strings.Repeat("=", 80))
 
-	get := exec.Command("go", "get", "-v", "./"+path)
+	get := exec.Command("go", "get", "-d", "-v", "./"+path)
 	get.Stdout = os.Stdout
 	get.Stderr = os.Stderr
 	err := get.Run()
 	if err != nil {
-		panic(err)
+		t.Fatal("Failed to run go get: ", err)
 	}
 
 	bin_name := filepath.Join("bin", path)
@@ -45,7 +57,7 @@ func runExample(t *testing.T, path string, files []string) {
 	bld.Stderr = os.Stderr
 	err = bld.Run()
 	if err != nil {
-		panic(err)
+		t.Fatal("Failed to run go build: ", err)
 	}
 
 	println(strings.Repeat("-", 80))
@@ -74,12 +86,12 @@ func runExample(t *testing.T, path string, files []string) {
 				panic(e)
 			}
 			if err.Error() != "os: process already finished" {
-				panic(err)
+				t.Fatal("Failed to terminate process: ", err)
 			}
 		}()
 		err := cmd.Process.Kill()
 		if err != nil {
-			panic(err)
+			t.Fatal("Failed to terminate process: ", err)
 		}
 	}()
 
@@ -102,6 +114,24 @@ func goInstall() {
 	}
 }
 
+func hasTest(files []string) bool {
+	for _, f := range files {
+		if strings.HasSuffix(f, "_test.go") {
+			return true
+		}
+	}
+	return false
+}
+
+func hasNonTest(files []string) bool {
+	for _, f := range files {
+		if !strings.HasSuffix(f, "_test.go") {
+			return true
+		}
+	}
+	return false
+}
+
 // Runs all examples in turn using "go build" and "dirname/dirname".
 // They run in an arbitrary order.
 func TestExamples(t *testing.T) {
@@ -120,7 +150,12 @@ func TestExamples(t *testing.T) {
 		}
 		return err
 	})
-	for k := range example_files {
-		runExample(t, k, example_files[k])
+	for k, files := range example_files {
+		if hasTest(files) {
+			runTest(t, k)
+		}
+		if hasNonTest(files) {
+			runExample(t, k, files)
+		}
 	}
 }
