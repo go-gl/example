@@ -5,21 +5,13 @@
 package examples
 
 import (
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
-
-	// These dependencies are listed here to prevent "go get" from having to
-	// do more work later. Otherwise, the later delay would count against
-	// the tests, which only have five minutes to run - network and build
-	// activity can take a long time on a heavily loaded node.
-	_ "github.com/andrebq/gas"
-	_ "github.com/go-gl/gl"
-	_ "github.com/go-gl/glfw"
-	_ "github.com/go-gl/glu"
 )
 
 const default_sleeptime = 1 * time.Second
@@ -151,6 +143,7 @@ func TestExamples(t *testing.T) {
 		return err
 	})
 	for k, files := range example_files {
+		log.Print("=== ", k)
 		if hasTest(files) {
 			runTest(t, k)
 		}
