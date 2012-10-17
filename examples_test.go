@@ -14,10 +14,11 @@ import (
 	"time"
 )
 
-const default_sleeptime = 1 * time.Second
+const default_wait_time = 5 * time.Second
 
+// Test specific run times
 var runtimes = map[string]time.Duration{
-	"nehe03": 5 * time.Second,
+	"nehe/03": 5 * time.Second,
 }
 
 func runTest(t *testing.T, path string) {
@@ -58,41 +59,37 @@ func runExample(t *testing.T, path string, files []string) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	done := false
+	exited, sleeproutine_error := make(chan bool, 1), make(chan error, 1)
+	ran_long_enough := false
 
 	go func() {
-		sleeptime, ok := runtimes[path]
+		wait_time, ok := runtimes[path]
 		if !ok {
-			sleeptime = default_sleeptime
+			wait_time = default_wait_time
 		}
-		time.Sleep(sleeptime)
-		done = true
-
-		defer func() {
-			e := recover()
-			if e == nil {
-				return
+		select {
+		case <-exited:
+			break
+		case <-time.After(wait_time):
+			ran_long_enough = true
+			err := cmd.Process.Kill()
+			if err != nil && err.Error() != "os: process already finished" {
+				sleeproutine_error <- err
 			}
-			err, ok := e.(error)
-			if !ok {
-				panic(e)
-			}
-			if err.Error() != "os: process already finished" {
-				t.Fatal("Failed to terminate process: ", err)
-			}
-		}()
-		err := cmd.Process.Kill()
-		if err != nil {
-			t.Fatal("Failed to terminate process: ", err)
 		}
+		sleeproutine_error <- nil
 	}()
 
 	err = cmd.Run()
+	exited <- true
 
-	// If the done flag is true, then we made it through five seconds of runtime
-	if !done && err != nil {
-		//panic(err)
-		t.Fatal("Process died unexpectedly: ", err)
+	if !ran_long_enough && err != nil {
+		t.Fatalf("Process died unexpectedly: %q", err)
+	}
+
+	// Sync with sleep routine
+	if err = <-sleeproutine_error; err != nil {
+		t.Fatalf("Unexpected error: %q", err)
 	}
 }
 
