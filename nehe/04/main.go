@@ -7,11 +7,11 @@
 package main
 
 import (
-	"fmt"
+	"log"
+
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glfw"
 	"github.com/go-gl/glu"
-	"os"
 )
 
 const (
@@ -29,14 +29,14 @@ var (
 func main() {
 	var err error
 	if err = glfw.Init(); err != nil {
-		fmt.Fprintf(os.Stderr, "[e] %v\n", err)
+		log.Fatalf("%v\n", err)
 		return
 	}
 
 	defer glfw.Terminate()
 
 	if err = glfw.OpenWindow(Width, Height, 8, 8, 8, 8, 0, 8, glfw.Windowed); err != nil {
-		fmt.Fprintf(os.Stderr, "[e] %v\n", err)
+		log.Fatalf("%v\n", err)
 		return
 	}
 

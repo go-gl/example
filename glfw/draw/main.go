@@ -5,11 +5,11 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"math"
+
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glfw"
-	"math"
-	"os"
 )
 
 var (
@@ -21,14 +21,14 @@ var (
 func main() {
 	var err error
 	if err = glfw.Init(); err != nil {
-		fmt.Fprintf(os.Stderr, "[e] %v\n", err)
+		log.Fatalf("%v\n", err)
 		return
 	}
 
 	defer glfw.Terminate()
 
 	if err = glfw.OpenWindow(640, 480, 8, 8, 8, 8, 0, 0, glfw.Windowed); err != nil {
-		fmt.Fprintf(os.Stderr, "[e] %v\n", err)
+		log.Fatalf("%v\n", err)
 		return
 	}
 
