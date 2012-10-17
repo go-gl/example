@@ -12,6 +12,7 @@ import (
 	// the tests, which only have five minutes to run - network and build
 	// activity can take a long time on a heavily loaded test node.
 	_ "github.com/andrebq/gas"
+	_ "github.com/banthar/Go-SDL/sdl"
 
 	_ "github.com/go-gl/gl"
 	_ "github.com/go-gl/glfw"
