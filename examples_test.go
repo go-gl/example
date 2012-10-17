@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-const default_wait_time = 5 * time.Second
+const default_wait_time = 1 * time.Second
 
 // Test specific run times
 var runtimes = map[string]time.Duration{
@@ -37,8 +37,7 @@ func runExample(t *testing.T, path string, files []string) {
 	println(strings.Repeat("=", 80))
 
 	get := exec.Command("go", "get", "-d", "-v", "./"+path)
-	get.Stdout = os.Stdout
-	get.Stderr = os.Stderr
+	get.Stdout, get.Stderr = os.Stdout, os.Stderr
 	err := get.Run()
 	if err != nil {
 		t.Fatal("Failed to run go get: ", err)
@@ -46,8 +45,7 @@ func runExample(t *testing.T, path string, files []string) {
 
 	bin_name := filepath.Join("bin", path)
 	bld := exec.Command("go", "build", "-v", "-o", bin_name, "./"+path)
-	bld.Stdout = os.Stdout
-	bld.Stderr = os.Stderr
+	bld.Stdout, bld.Stderr = os.Stdout, os.Stderr
 	err = bld.Run()
 	if err != nil {
 		t.Fatal("Failed to run go build: ", err)
@@ -56,13 +54,14 @@ func runExample(t *testing.T, path string, files []string) {
 	println(strings.Repeat("-", 80))
 
 	cmd := exec.Command(bin_name)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 
 	exited, sleeproutine_error := make(chan bool, 1), make(chan error, 1)
 	ran_long_enough := false
 
 	go func() {
+		// This go routine waits for the process to exit, or `wait_time`, 
+		// whichever comes first. If `wait_time` expires, `cmd` is killed.
 		wait_time, ok := runtimes[path]
 		if !ok {
 			wait_time = default_wait_time
@@ -95,9 +94,21 @@ func runExample(t *testing.T, path string, files []string) {
 
 func goInstall() {
 	install := exec.Command("go", "install", "-v")
-	install.Stdout = os.Stdout
-	install.Stderr = os.Stderr
+	install.Stdout, install.Stderr = os.Stdout, os.Stderr
 	err := install.Run()
+	if err != nil {
+		panic(err)
+	}
+}
+
+// This is needed so that gas can find the go-gl/examples/data/ directory if we
+// are running in a clone. Not an ideal solution, better would be for gas to 
+// detect the fully qualified package name of the caller. Something to 
+// investigate on a rainy day..
+func goGetExamples() {
+	getex := exec.Command("go", "get", "-d", "github.com/go-gl/examples")
+	getex.Stdout, getex.Stderr = os.Stdout, os.Stderr
+	err := getex.Run()
 	if err != nil {
 		panic(err)
 	}
@@ -126,9 +137,11 @@ func hasNonTest(files []string) bool {
 func TestExamples(t *testing.T) {
 	// Required to ensure that the test assets are available at the right path.
 	// Maybe this should be moved into the test helper scripts..
+	goGetExamples()
 	goInstall()
 
 	example_files := map[string][]string{}
+	// Discover all .go files below this directory
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		dir := filepath.Dir(path)
 		if dir == "." {
@@ -139,6 +152,8 @@ func TestExamples(t *testing.T) {
 		}
 		return err
 	})
+
+	// Run tests and build/run binaries in each directory, if there are any.
 	for k, files := range example_files {
 		log.Print("=== ", k)
 		if hasTest(files) {
