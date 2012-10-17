@@ -23,12 +23,12 @@ package main
 */
 
 import (
-    "math"
-    "flag"
-    
-    "github.com/banthar/Go-SDL/sdl"
-    
-    "github.com/go-gl/gl"
+	"flag"
+	"math"
+
+	"github.com/banthar/Go-SDL/sdl"
+
+	"github.com/go-gl/gl"
 )
 
 var printInfo = flag.Bool("info", false, "print GL implementation information")
@@ -214,7 +214,6 @@ func draw() {
 	}
 }
 
-
 func idle() {
 	angle += 2.0
 }
@@ -292,7 +291,7 @@ func main() {
 	}
 
 	if gl.Init() != 0 {
-		panic("gl error")	
+		panic("gl error")
 	}
 
 	sdl.WM_SetCaption("Gears", "gears")

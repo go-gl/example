@@ -9,10 +9,11 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glfw"
 	"github.com/go-gl/glu"
-	"os"
 )
 
 const GL_MULTISAMPLE_ARB = 0x809D
@@ -20,7 +21,7 @@ const GL_MULTISAMPLE_ARB = 0x809D
 func main() {
 	var err error
 	if err = glfw.Init(); err != nil {
-		fmt.Fprintf(os.Stderr, "[e] %v\n", err)
+		log.Fatalf("%v\n", err)
 		return
 	}
 
@@ -30,7 +31,7 @@ func main() {
 	glfw.OpenWindowHint(glfw.FsaaSamples, 4)
 
 	if err = glfw.OpenWindow(400, 400, 0, 0, 0, 0, 0, 0, glfw.Windowed); err != nil {
-		fmt.Fprintf(os.Stderr, "[e] %v\n", err)
+		log.Fatalf("%v\n", err)
 		return
 	}
 
@@ -40,9 +41,9 @@ func main() {
 	glfw.SetSwapInterval(1)
 
 	if samples := glfw.WindowParam(glfw.FsaaSamples); samples != 0 {
-		fmt.Fprintf(os.Stdout, "Context reports FSAA is supported with %d samples\n", samples)
+		fmt.Printf("Context reports FSAA is supported with %d samples\n", samples)
 	} else {
-		fmt.Fprintf(os.Stdout, "Context reports FSAA is unsupported\n")
+		fmt.Printf("Context reports FSAA is unsupported\n")
 	}
 
 	gl.MatrixMode(gl.PROJECTION)
