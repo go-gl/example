@@ -18,4 +18,5 @@ import (
 	_ "github.com/go-gl/glfw"
 	_ "github.com/go-gl/glu"
 	_ "github.com/go-gl/testutils"
+	_ "github.com/go-gl/text"
 )
