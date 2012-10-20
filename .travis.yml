@@ -3,13 +3,14 @@ language: go
 install:
   - wget -q https://raw.github.com/go-gl/testutils/master/travis-helper-functions.sh
   - source travis-helper-functions.sh
+  - initialize
 
 script:
   - go build -v
 
 after_script:
   - go test -v
-  - upload_to_imgur
+  - upload-to-imgur
 
 after_failure: failure
 after_error: failure
