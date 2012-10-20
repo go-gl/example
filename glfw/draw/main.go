@@ -53,6 +53,9 @@ func main() {
 }
 
 func onResize(w, h int) {
+	// Write to both buffers, prevent flickering
+	gl.DrawBuffer(gl.FRONT_AND_BACK)
+
 	gl.MatrixMode(gl.PROJECTION)
 	gl.LoadIdentity()
 	gl.Viewport(0, 0, w, h)
