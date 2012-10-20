@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// This program demonstrates the use of truetype font rendering.
-// It renders the same string using different font scales.
+// This program demonstrates the use of bitmap (raster) fonts.
+// It renders the same string using different font scale factors.
 package main
 
 import (
@@ -11,20 +11,28 @@ import (
 	"github.com/andrebq/gas"
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glfw"
+	"github.com/go-gl/gltext"
 	"github.com/go-gl/glu"
-	"github.com/go-gl/text"
 	"log"
 	"os"
 )
 
-const SampleString = "0 1 2 3 4 5 6 7 8 9 A B C D E F"
-
-var fonts [16]*text.Font
+var fonts [8]*gltext.Font
 
 func main() {
-	file, err := gas.Abs("code.google.com/p/freetype-go/luxi-fonts/luxisr.ttf")
+	// This file holds the actual glyph shapes.
+	imgFile, err := gas.Abs("github.com/go-gl/examples/data/bitmap_font.png")
 	if err != nil {
-		log.Printf("Find font file: %v", err)
+		log.Printf("Find font image file: %v", err)
+		return
+	}
+
+	// This file is a JSON encoded dataset which describes the font
+	// and contains the pixel offsets and sizes for each glyph in
+	// bitmap_font.png. Both files are needed to load a bitmap font.
+	configFile, err := gas.Abs("github.com/go-gl/examples/data/bitmap_font.js")
+	if err != nil {
+		log.Printf("Find font config file: %v", err)
 		return
 	}
 
@@ -36,9 +44,9 @@ func main() {
 
 	defer glfw.Terminate()
 
-	// Load the same font at different scale factors and directions.
+	// Load the same bitmap font at different scale factors.
 	for i := range fonts {
-		fonts[i], err = loadFont(file, int32(12+i))
+		fonts[i], err = loadFont(imgFile, configFile, i+1)
 		if err != nil {
 			log.Printf("LoadFont: %v", err)
 			return
@@ -50,7 +58,7 @@ func main() {
 	for glfw.WindowParam(glfw.Opened) > 0 {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		err = drawString(10, 10, SampleString)
+		err = drawString(10, 10, "0 1 2 3 4 5 6 7 8 9 A B C D E F")
 		if err != nil {
 			log.Printf("Printf: %v", err)
 			return
@@ -60,19 +68,28 @@ func main() {
 	}
 }
 
-// loadFont loads the specified font at the given scale.
-func loadFont(file string, scale int32) (*text.Font, error) {
-	fd, err := os.Open(file)
+// loadFont loads a scaled bitmap font from the given image
+// and configuration files.
+func loadFont(image, config string, scale int) (*gltext.Font, error) {
+	a, err := os.Open(image)
 	if err != nil {
 		return nil, err
 	}
 
-	defer fd.Close()
+	defer a.Close()
 
-	return text.LoadTruetype(fd, scale, 32, 127, text.LeftToRight)
+	b, err := os.Open(config)
+	if err != nil {
+		return nil, err
+	}
+
+	defer b.Close()
+
+	return gltext.LoadBitmap(a, b, scale)
 }
 
-// drawString draws the same string for each loaded font.
+// drawString draws the same string twice with a colour and location offset,
+// to simulate a drop-shadow. It does so for each loaded font.
 func drawString(x, y float32, str string) error {
 	for i := range fonts {
 		if fonts[i] == nil {
@@ -84,14 +101,14 @@ func drawString(x, y float32, str string) error {
 		_, h := fonts[i].GlyphBounds()
 		y := y + float32(i*h)
 
-		// Draw a rectangular backdrop using the string's metrics.
-		sw, sh := fonts[i].Metrics(SampleString)
 		gl.Color4f(0.1, 0.1, 0.1, 0.7)
-		gl.Rectf(x, y, x+float32(sw), y+float32(sh))
+		err := fonts[i].Printf(x+2, y+2, str)
+		if err != nil {
+			return err
+		}
 
-		// Render the string.
 		gl.Color4f(1, 1, 1, 1)
-		err := fonts[i].Printf(x, y, str)
+		err = fonts[i].Printf(x, y, str)
 		if err != nil {
 			return err
 		}
@@ -113,7 +130,7 @@ func initGL() error {
 		return err
 	}
 
-	glfw.SetWindowTitle("go-gl/text: Truetype font example")
+	glfw.SetWindowTitle("go-gl/gltext: Bitmap font example")
 	glfw.SetSwapInterval(1)
 	glfw.SetWindowSizeCallback(onResize)
 	glfw.SetKeyCallback(onKey)
