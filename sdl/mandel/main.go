@@ -484,7 +484,7 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 		tex.Bind(gl.TEXTURE_2D)
 		drawQuad(0, 0, 512, 512, tc.TX, tc.TY, tc.TX2, tc.TY2)
-		gl.BindTexture(gl.TEXTURE_2D, 0)
+		tex.Unbind(gl.TEXTURE_2D)
 		if dndDragging {
 			drawSelection(dndStart, dndEnd)
 		}
