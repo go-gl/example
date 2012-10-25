@@ -9,11 +9,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glfw"
 	"github.com/go-gl/glh"
-	"github.com/go-gl/glu"
 	"image"
 	"image/color"
 	"image/draw"
@@ -127,18 +125,14 @@ func initGL() error {
 		return err
 	}
 
-	glfw.SetWindowTitle("go-gl/gltext: freetype-gl")
+	glfw.SetWindowTitle("Texture atlas example")
 	glfw.SetSwapInterval(1)
 	glfw.SetWindowSizeCallback(onResize)
 	glfw.SetKeyCallback(onKey)
 
-	errno := gl.Init()
-	if errno != gl.NO_ERROR {
-		str, err := glu.ErrorString(errno)
-		if err != nil {
-			return fmt.Errorf("Unknown openGL error: %d", errno)
-		}
-		return fmt.Errorf(str)
+	gl.Init()
+	if err = glh.CheckGLError(); err != nil {
+		return err
 	}
 
 	gl.Disable(gl.DEPTH_TEST)
@@ -146,7 +140,7 @@ func initGL() error {
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-	gl.ClearColor(0.2, 0.2, 0.23, 0.0)
+	gl.ClearColor(0.2, 0.2, 0.23, 1.0)
 	return nil
 }
 
