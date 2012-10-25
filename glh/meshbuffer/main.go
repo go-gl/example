@@ -17,21 +17,21 @@ import (
 var mesh = &glh.Mesh{
 	// We create as few vertices as possible.
 	// Manually building a cube would require 24 vertices. Many of which
-	// are duplicates. All we have to define here, is the 8 unique ones,
+	// are duplicates. All we have to define here, is the 8 unique ones
 	// necessary to construct each face of the cube.
-	Vertices: [][3]float32{
+	Positions: [][]float32{
 		{1, 1, -1}, {-1, 1, -1}, {-1, 1, 1}, {1, 1, 1},
 		{1, -1, 1}, {-1, -1, 1}, {-1, -1, -1}, {1, -1, -1},
 	},
 
 	// Each vertex comes with its own colour.
-	Colors: [][4]float32{
+	Colors: [][]float32{
 		{1, 0, 0, 1}, {0, 1, 0, 1}, {0, 0, 1, 1}, {1, 0, 1, 1},
 		{1, 1, 0, 1}, {0, 1, 1, 1}, {1, 1, 1, 1}, {0, 0, 0, 1},
 	},
 
-	// These are the indices into the Vertices and Colors lists.
-	// They tell the GPU which vertex/color pair to use in order to construct
+	// These are the indices into the Position and Color lists.
+	// They tell the GPU which position/color pair to use in order to construct
 	// the whole cube. As can be seen, all elements are repeated multiple
 	// times to create the correct layout. For large meshes, this can save
 	// a tremendous amount of storage space.
@@ -54,8 +54,13 @@ func main() {
 
 	defer glfw.Terminate()
 
-	// Create a mesh buffer.
-	mb := glh.NewMeshBuffer()
+	// Create a mesh buffer with the given attributes.
+	mb := glh.NewMeshBuffer(
+		glh.NewMeshAttr(3), // Vertex positions have 3 components (x, y, z).
+		glh.NewMeshAttr(4), // Colors have 4 components (r, g, b, a).
+		nil,                // No surface normals.
+		nil,                // No texture coordinates.
+	)
 	defer mb.Release()
 
 	// Data is not going to change. So ensure best performance
@@ -105,7 +110,7 @@ func initGL() error {
 
 	glfw.OpenWindowHint(glfw.FsaaSamples, 4)
 
-	err = glfw.OpenWindow(512, 512, 8, 8, 8, 8, 0, 0, glfw.Windowed)
+	err = glfw.OpenWindow(512, 512, 8, 8, 8, 8, 32, 0, glfw.Windowed)
 	if err != nil {
 		glfw.Terminate()
 		return err
@@ -155,7 +160,7 @@ func onResize(w, h int) {
 	gl.Viewport(0, 0, w, h)
 	gl.MatrixMode(gl.PROJECTION)
 	gl.LoadIdentity()
-	glu.Perspective(120.0, float64(w)/float64(h), 0.1, 100.0)
+	glu.Perspective(45.0, float64(w)/float64(h), 0.1, 100.0)
 	gl.MatrixMode(gl.MODELVIEW)
 	gl.LoadIdentity()
 }
