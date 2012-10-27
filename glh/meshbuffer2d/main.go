@@ -51,14 +51,16 @@ func main() {
 func createBuffer() *glh.MeshBuffer {
 	// Create a mesh buffer with the given attributes.
 	mb := glh.NewMeshBuffer(
+		glh.RenderBuffered,
+
 		// Indices have 1 element.
-		glh.NewUint32Attr(1, gl.STATIC_DRAW),
+		glh.NewMeshAttr(1, gl.UNSIGNED_INT, gl.STATIC_DRAW),
 
 		// Vertex positions have 2 components (x, y).
-		glh.NewInt32Attr(2, gl.STATIC_DRAW),
+		glh.NewMeshAttr(2, gl.INT, gl.STATIC_DRAW),
 
 		// Colors have 3 components (r, g, b).
-		glh.NewFloat32Attr(3, gl.STATIC_DRAW),
+		glh.NewMeshAttr(3, gl.FLOAT, gl.STATIC_DRAW),
 
 		nil, // We have no surface normals.    
 		nil, // No texture coordinates either. 
