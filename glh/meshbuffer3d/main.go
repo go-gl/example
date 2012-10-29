@@ -72,11 +72,11 @@ func createBuffer() *glh.MeshBuffer {
 		1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1,
 	}
 
-	// These are the indices into the Position and Color lists.
+	// These are the indices into the position and color lists.
 	// They tell the GPU which position/color pair to use in order to construct
 	// the whole cube. As can be seen, all elements are repeated multiple
-	// times to create the correct layout. For large meshes, this can save
-	// a tremendous amount of storage space.
+	// times to create the correct layout. For large meshes with many duplicate
+	// vertices, this can save a sizable amount of storage space.
 	idx := []byte{
 		0, 1, 2, 3, 4, 5, 6, 7, 3, 2, 5, 4,
 		7, 6, 1, 0, 2, 1, 6, 5, 0, 3, 4, 7,
@@ -84,21 +84,20 @@ func createBuffer() *glh.MeshBuffer {
 
 	// Create a mesh buffer with the given attributes.
 	mb := glh.NewMeshBuffer(
+		glh.RenderArrays,
+
 		// Indices.
-		glh.NewUint8Attr(1, gl.STATIC_DRAW),
+		glh.NewIndexAttr(1, gl.UNSIGNED_BYTE, gl.STATIC_DRAW),
 
 		// Vertex positions have 3 components (x, y, z).
-		glh.NewFloat32Attr(3, gl.STATIC_DRAW),
+		glh.NewPositionAttr(3, gl.FLOAT, gl.STATIC_DRAW),
 
 		// Colors have 4 components (r, g, b, a).
-		glh.NewFloat32Attr(4, gl.STATIC_DRAW),
-
-		nil, // No surface normals.
-		nil, // No texture coordinates.
+		glh.NewColorAttr(4, gl.FLOAT, gl.STATIC_DRAW),
 	)
 
 	// Add the mesh to the buffer.
-	mb.Add(idx, pos, clr, nil, nil)
+	mb.Add(idx, pos, clr)
 	return mb
 }
 
