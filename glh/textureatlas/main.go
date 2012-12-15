@@ -46,7 +46,7 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		// Bind the atlas texture and render a quad with it.
-		atlas.Bind()
+		atlas.Bind(gl.TEXTURE_2D)
 		gl.Begin(gl.QUADS)
 		gl.TexCoord2f(0, 0)
 		gl.Vertex2f(0, 0)
@@ -57,7 +57,7 @@ func main() {
 		gl.TexCoord2f(0, 1)
 		gl.Vertex2f(0, AtlasSize)
 		gl.End()
-		atlas.Unbind()
+		atlas.Unbind(gl.TEXTURE_2D)
 
 		glfw.SwapBuffers()
 	}
@@ -109,7 +109,7 @@ func fillAtlas(a *glh.TextureAtlas) {
 	//atlas.Save("atlas.png")
 
 	// This creates the texture from the atlas pixel data.
-	a.Commit()
+	a.Commit(gl.TEXTURE_2D)
 }
 
 // initGL initializes GLFW and OpenGL.
