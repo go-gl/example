@@ -17,7 +17,7 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/pwaller/go-ffmpeg-encoding"
+	"github.com/pwaller/go-ffmpeg-video-encoding"
 )
 
 func mkpng(filename string, im image.Image) {
