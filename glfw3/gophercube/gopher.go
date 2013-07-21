@@ -5,12 +5,12 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/go-gl/gl"
+	glfw "github.com/go-gl/glfw3"
 	"image"
 	"image/png"
 	"io"
 	"os"
-	"github.com/go-gl/gl"
-	glfw "github.com/go-gl/glfw3"
 )
 
 const (
@@ -43,7 +43,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	window.MakeContextCurrent()
 
 	glfw.SwapInterval(1)
