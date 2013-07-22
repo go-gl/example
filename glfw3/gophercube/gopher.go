@@ -1,16 +1,18 @@
-//This example is copied from https://github.com/chsc/gogl/
+// Copyright 2012 The go-gl Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package main
 
 import (
 	"errors"
 	"fmt"
+	"github.com/go-gl/gl"
+	glfw "github.com/go-gl/glfw3"
 	"image"
 	"image/png"
 	"io"
 	"os"
-	"github.com/go-gl/gl"
-	glfw "github.com/go-gl/glfw3"
 )
 
 const (
@@ -43,7 +45,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	window.MakeContextCurrent()
 
 	glfw.SwapInterval(1)
