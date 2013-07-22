@@ -1,26 +1,15 @@
+// Copyright 2013 The go-gl Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package main
 
 /*
- * 3-D gear wheels.  This program is in the public domain.
+ * 3-D gear wheels.
  *
  * Command line options:
  *    -info      print GL implementation information
  *    -exit      automatically exit after 30 seconds
- *
- *
- * Brian Paul
- *
- *
- * Marcus Geelnard:
- *   - Conversion to GLFW
- *   - Time based rendering (frame rate independent)
- *   - Slightly modified camera that should work better for stereo viewing
- *
- *
- * Camilla Berglund:
- *   - Removed FPS counter (this is not a benchmark)
- *   - Added a few comments
- *   - Enabled vsync
  *
  */
 
