@@ -22,7 +22,7 @@ const SampleString = "0 1 2 3 4 5 6 7 8 9 A B C D E F"
 var fonts [16]*gltext.Font
 
 func main() {
-	file, err := gas.Abs("code.google.com/p/freetype-go/luxi-fonts/luxisr.ttf")
+	file, err := gas.Abs("code.google.com/p/freetype-go/testdata/luxisr.ttf")
 	if err != nil {
 		log.Printf("Find font file: %v", err)
 		return
