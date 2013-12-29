@@ -323,7 +323,7 @@ func TestUniform1fv(t *testing.T) {
 
 		values := []float32{1.0, 1.1, 1.2, 1.3}
 		foo := prg.GetUniformLocation("foo")
-		foo.Uniform1fv(values)
+		foo.Uniform1fv(len(values), values)
 		if GetError() != NO_ERROR {
 			t.Error("slice failed")
 		}
