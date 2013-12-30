@@ -7,16 +7,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/andrebq/gas"
 	gl "github.com/go-gl/gl"
 	glfw "github.com/go-gl/glfw3"
 	glh "github.com/go-gl/glh"
-	"os"
+	"io/ioutil"
 )
 
 const (
-	Title  = "triangle"
-	Width  = 500
-	Height = 500
+	Title    = "triangle"
+	Width    = 500
+	Height   = 500
+	DataPath = "github.com/go-gl/examples/data"
 )
 
 func errorCallback(err glfw.ErrorCode, desc string) {
@@ -29,24 +31,17 @@ func keyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action,
 	}
 }
 
-// Return file's contents or panic on error.
-func loadFile(filePath string) []byte {
-	file, err := os.Open(filePath)
+// Load file from the data directory and return its contents or panic on error.
+func loadDataFile(filePath string) string {
+	absFilePath, err := gas.Abs(DataPath + "/" + filePath)
 	if err != nil {
 		panic(err)
 	}
-	info, err := file.Stat()
+	content, err := ioutil.ReadFile(absFilePath)
 	if err != nil {
 		panic(err)
 	}
-	b := make([]byte, info.Size())
-	if _, err := file.Read(b); err != nil {
-		panic(err)
-	}
-	if err := file.Close(); err != nil {
-		panic(err)
-	}
-	return b
+	return string(content)
 }
 
 func main() {
@@ -79,8 +74,8 @@ func main() {
 	}
 	gl.GetError() // ignore INVALID_ENUM that GLEW raises when using OpenGL 3.2+
 
-	vShader := glh.Shader{gl.VERTEX_SHADER, string(loadFile("../../data/triangle.v.glsl"))}
-	fShader := glh.Shader{gl.FRAGMENT_SHADER, string(loadFile("../../data/triangle.f.glsl"))}
+	vShader := glh.Shader{gl.VERTEX_SHADER, loadDataFile("triangle.v.glsl")}
+	fShader := glh.Shader{gl.FRAGMENT_SHADER, loadDataFile("triangle.f.glsl")}
 	program := glh.NewProgram(vShader, fShader)
 	program.Use()
 
@@ -88,7 +83,7 @@ func main() {
 	vertexArray := gl.GenVertexArray()
 	vertexArray.Bind()
 
-	triangleVertices := [...]float32{-0.5, -0.5, -0.5, 0.5, 0.5, -0.5} // float32 should be equivalent to GLfloat
+	triangleVertices := [...]float32{-0.5, -0.5, -0.5, 0.5, 0.5, -0.5}
 	triangleBuffer := gl.GenBuffer()
 	triangleBuffer.Bind(gl.ARRAY_BUFFER)
 	gl.BufferData(gl.ARRAY_BUFFER, int(glh.Sizeof(gl.FLOAT))*len(triangleVertices), &triangleVertices, gl.STATIC_DRAW)
