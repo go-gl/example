@@ -21,10 +21,17 @@ var runtimes = map[string]time.Duration{
 	"nehe/03": 5 * time.Second,
 }
 
+func Command(args ...string) *exec.Cmd {
+	if os.Getenv("USE_VGL") != "" {
+		return exec.Command("vglrun", args...)
+	}
+	return exec.Command(args[0], args[1:]...)
+}
+
 func runTest(t *testing.T, path string) {
 	println(strings.Repeat("=", 80))
 	println("-- subtest: ", path)
-	test := exec.Command("go", "test", "-v", "./"+path)
+	test := Command("go", "test", "-v", "./"+path)
 	test.Stdout, test.Stderr = os.Stdout, os.Stderr
 
 	err := test.Run()
@@ -53,14 +60,14 @@ func runExample(t *testing.T, path string, files []string) {
 
 	println(strings.Repeat("-", 80))
 
-	cmd := exec.Command(bin_name)
+	cmd := Command(bin_name)
 	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 
-	exited, sleeproutine_error := make(chan bool, 1), make(chan error, 1)
+	exited, sleeproutine_error := make(chan struct{}, 1), make(chan error, 1)
 	ran_long_enough := false
 
 	go func() {
-		// This go routine waits for the process to exit, or `wait_time`, 
+		// This go routine waits for the process to exit, or `wait_time`,
 		// whichever comes first. If `wait_time` expires, `cmd` is killed.
 		wait_time, ok := runtimes[path]
 		if !ok {
@@ -76,19 +83,21 @@ func runExample(t *testing.T, path string, files []string) {
 				sleeproutine_error <- err
 			}
 		}
-		sleeproutine_error <- nil
+		close(sleeproutine_error)
 	}()
 
+	start := time.Now()
 	err = cmd.Run()
-	exited <- true
+	duration := time.Since(start)
+	close(exited)
 
 	if !ran_long_enough && err != nil {
-		t.Fatalf("Process died unexpectedly: %q", err)
+		t.Errorf("Process %v died unexpectedly after %v: %q", path, duration, err)
 	}
 
 	// Sync with sleep routine
-	if err = <-sleeproutine_error; err != nil {
-		t.Fatalf("Unexpected error: %q", err)
+	for err := range sleeproutine_error {
+		t.Errorf("Unexpected error running %v after %v: %q", path, duration, err)
 	}
 }
 
@@ -102,8 +111,8 @@ func goInstall() {
 }
 
 // This is needed so that gas can find the go-gl/examples/data/ directory if we
-// are running in a clone. Not an ideal solution, better would be for gas to 
-// detect the fully qualified package name of the caller. Something to 
+// are running in a clone. Not an ideal solution, better would be for gas to
+// detect the fully qualified package name of the caller. Something to
 // investigate on a rainy day..
 func goGetExamples() {
 	getex := exec.Command("go", "get", "-d", "github.com/go-gl/examples")
