@@ -21,10 +21,17 @@ var runtimes = map[string]time.Duration{
 	"nehe/03": 5 * time.Second,
 }
 
+func Command(args ...string) *exec.Cmd {
+	if os.Getenv("USE_VGL") != "" {
+		return exec.Command("vglrun", args...)
+	}
+	return exec.Command(args[0], args[1:]...)
+}
+
 func runTest(t *testing.T, path string) {
 	println(strings.Repeat("=", 80))
 	println("-- subtest: ", path)
-	test := exec.Command("go", "test", "-v", "./"+path)
+	test := Command("go", "test", "-v", "./"+path)
 	test.Stdout, test.Stderr = os.Stdout, os.Stderr
 
 	err := test.Run()
@@ -53,7 +60,7 @@ func runExample(t *testing.T, path string, files []string) {
 
 	println(strings.Repeat("-", 80))
 
-	cmd := exec.Command(bin_name)
+	cmd := Command(bin_name)
 	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 
 	exited, sleeproutine_error := make(chan bool, 1), make(chan error, 1)
