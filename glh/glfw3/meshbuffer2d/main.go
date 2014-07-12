@@ -10,11 +10,13 @@
 package main
 
 import (
-	"github.com/go-gl/gl"
-	"github.com/go-gl/glfw"
-	"github.com/go-gl/glh"
+	"errors"
 	"log"
 	"math/rand"
+
+	"github.com/go-gl/gl"
+	glfw "github.com/go-gl/glfw3"
+	"github.com/go-gl/glh"
 )
 
 const (
@@ -43,12 +45,11 @@ var (
 )
 
 func main() {
-	err := initGL()
+	window, err := initGL()
 	if err != nil {
 		log.Printf("InitGL: %v", err)
 		return
 	}
-
 	defer glfw.Terminate()
 
 	mb := createBuffer()
@@ -57,23 +58,26 @@ func main() {
 	attr := mb.Colors()
 
 	// Perform the rendering.
-	for glfw.WindowParam(glfw.Opened) > 0 {
+	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 		gl.LoadIdentity()
 
 		// Center mesh on screen.
-		wx, wy := glfw.WindowSize()
+		wx, wy := window.GetSize()
 		px := (wx / 2) - ((Cols * CellWidth) / 2)
 		py := (wy / 2) - ((Rows * CellHeight) / 2)
 		gl.Translatef(float32(px), float32(py), 0)
 
 		// Change the color of the quad under the mouse cursor.
-		colorize(px, py, attr)
+		mx, my := window.GetCursorPosition()
+
+		colorize(int(mx), int(my), px, py, attr)
 
 		// Render the mesh.
 		mb.Render(gl.QUADS)
 
-		glfw.SwapBuffers()
+		window.SwapBuffers()
+		glfw.PollEvents()
 	}
 
 	attr = nil
@@ -130,13 +134,13 @@ func createBuffer() *glh.MeshBuffer {
 
 // colorize changes the color of the quad, currently
 // underneath the mouse cursor.
-func colorize(px, py int, attr *glh.Attr) {
+func colorize(mx, my, px, py int, attr *glh.Attr) {
 	// Fetch color data from mesh buffer.
 	data := attr.Data().([]uint8)
 
 	// We will be changing the color of the quad under the mouse cursor.
 	// So first determine which quad the mouse is currently hovering over.
-	mx, my := glfw.MousePos()
+
 	mx = (mx - px) / CellWidth
 	my = (my - py) / CellHeight
 	index := my*Cols + mx
@@ -191,29 +195,30 @@ func setColor(d []byte, r, g, b byte) {
 	d[11] = b
 }
 
+var ErrGLFWFailed = errors.New("Failed to init glfw")
+
 // initGL initializes GLFW and OpenGL.
-func initGL() error {
-	err := glfw.Init()
-	if err != nil {
-		return err
+func initGL() (*glfw.Window, error) {
+	ok := glfw.Init()
+	if !ok {
+		return nil, ErrGLFWFailed
 	}
+	glfw.SwapInterval(1)
 
-	glfw.OpenWindowHint(glfw.FsaaSamples, 4)
+	window, err := glfw.CreateWindow(512, 512, "Meshbuffer 2D example", nil, nil)
 
-	err = glfw.OpenWindow(512, 512, 8, 8, 8, 8, 0, 0, glfw.Windowed)
 	if err != nil {
 		glfw.Terminate()
-		return err
+		return nil, err
 	}
 
-	glfw.SetWindowTitle("Meshbuffer 2D example")
-	glfw.SetSwapInterval(1)
-	glfw.SetWindowSizeCallback(onResize)
-	glfw.SetKeyCallback(onKey)
+	window.SetSizeCallback(onResize)
+	window.SetKeyCallback(onKey)
+	window.MakeContextCurrent()
 
 	gl.Init()
 	if err = glh.CheckGLError(); err != nil {
-		return err
+		return nil, err
 	}
 
 	gl.Disable(gl.DEPTH_TEST)
@@ -221,18 +226,19 @@ func initGL() error {
 	gl.Disable(gl.LIGHTING)
 	gl.Enable(gl.COLOR_MATERIAL)
 	gl.ClearColor(0.2, 0.2, 0.23, 1.0)
-	return nil
+	return window, nil
 }
 
 // onKey handles key events.
-func onKey(key, state int) {
-	if key == glfw.KeyEsc {
-		glfw.CloseWindow()
+func onKey(window *glfw.Window, key glfw.Key, scancode int,
+	action glfw.Action, _ glfw.ModifierKey) {
+	if key == glfw.KeyEscape {
+		window.SetShouldClose(true)
 	}
 }
 
 // onResize handles window resize events.
-func onResize(w, h int) {
+func onResize(window *glfw.Window, w, h int) {
 	if w < 1 {
 		w = 1
 	}
