@@ -10,8 +10,8 @@ import (
 	"errors"
 	"fmt"
 	glfw "github.com/go-gl/glfw3"
+	gl32 "github.com/go-gl/glow/gl-core/3.2/gl"
 	"github.com/go-gl/glow/gl-core/3.3/gl"
-	gl4 "github.com/go-gl/glow/gl-core/4.4/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"image"
 	"image/draw"
@@ -71,8 +71,8 @@ func main() {
 	}
 
 	// Note that it is possible to use GL functions spanning multiple versions
-	if err := gl4.Init(); err != nil {
-		fmt.Println("Could not initialize GL 4.4 (non-fatal)")
+	if err := gl32.Init(); err != nil {
+		fmt.Println("Could not initialize GL 3.2 (non-fatal)")
 	}
 
 	version := gl.GoStr(gl.GetString(gl.VERSION))
