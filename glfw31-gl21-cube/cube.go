@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Command legacy-cube demonstrates simple Glow binding usage with the legacy
-// OpenGL 2.1 API.
+// Renders a textured spinning cube using GLFW 3.1 and OpenGL 2.1.
 package main
 
 import (
-	"fmt"
-	glfw "github.com/go-gl/glfw3"
-	"github.com/go-gl/glow/gl/2.1/gl"
 	"image"
 	"image/draw"
 	_ "image/png"
+	"log"
 	"os"
 	"runtime"
+
+	"github.com/go-gl/gl/v2.1/gl"
+	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 var (
@@ -23,19 +23,14 @@ var (
 	rotationY float32
 )
 
-func glfwErrorCallback(err glfw.ErrorCode, desc string) {
-	fmt.Printf("GLFW error %v: %v\n", err, desc)
-}
-
 func init() {
 	// GLFW event handling must run on the main OS thread
 	runtime.LockOSThread()
 }
 
 func main() {
-	glfw.SetErrorCallback(glfwErrorCallback)
-	if !glfw.Init() {
-		panic("failed to initialize glfw")
+	if err := glfw.Init(); err != nil {
+		log.Fatalln("failed to initialize glfw:", err)
 	}
 	defer glfw.Terminate()
 

@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Command cube demonstrates simple Glow binding usage.
-// This example is based in part on http://tomdalling.com/blog/modern-opengl/03-matrices-depth-buffering-animation/.
+// Renders a textured spinning cube using GLFW 3.1 and OpenGL 4.1 core forward-compatible profile.
 package main
 
 import (
 	"errors"
 	"fmt"
-	glfw "github.com/go-gl/glfw3"
-	gl32 "github.com/go-gl/glow/gl-core/3.2/gl"
-	"github.com/go-gl/glow/gl-core/3.3/gl"
-	"github.com/go-gl/mathgl/mgl32"
 	"image"
 	"image/draw"
 	_ "image/png"
+	"log"
 	"os"
 	"runtime"
 	"strings"
-	"unsafe"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/glfw/v3.1/glfw"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 const WindowWidth = 800
@@ -30,35 +29,17 @@ func init() {
 	runtime.LockOSThread()
 }
 
-func glfwErrorCallback(err glfw.ErrorCode, desc string) {
-	fmt.Printf("GLFW error %v: %v\n", err, desc)
-}
-
-func glDebugCallback(
-	source uint32,
-	gltype uint32,
-	id uint32,
-	severity uint32,
-	length int32,
-	message string,
-	userParam unsafe.Pointer) {
-	fmt.Printf("Debug source=%d type=%d severity=%d: %s\n", source, gltype, severity, message)
-}
-
 func main() {
-	// Initialize GLFW for window management
-	glfw.SetErrorCallback(glfwErrorCallback)
-	if !glfw.Init() {
-		panic("failed to initialize glfw")
+	if err := glfw.Init(); err != nil {
+		log.Fatalln("failed to initialize glfw:", err)
 	}
 	defer glfw.Terminate()
 
 	glfw.WindowHint(glfw.Resizable, glfw.False)
-	glfw.WindowHint(glfw.ContextVersionMajor, 3)
-	glfw.WindowHint(glfw.ContextVersionMinor, 3)
-	glfw.WindowHint(glfw.OpenglForwardCompatible, glfw.True)    // Necessary for OS X
-	glfw.WindowHint(glfw.OpenglProfile, glfw.OpenglCoreProfile) // Necessary for OS X
-	glfw.WindowHint(glfw.OpenglDebugContext, glfw.True)
+	glfw.WindowHint(glfw.ContextVersionMajor, 4)
+	glfw.WindowHint(glfw.ContextVersionMinor, 1)
+	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 	window, err := glfw.CreateWindow(WindowWidth, WindowHeight, "Cube", nil, nil)
 	if err != nil {
 		panic(err)
@@ -70,30 +51,8 @@ func main() {
 		panic(err)
 	}
 
-	// Note that it is possible to use GL functions spanning multiple versions
-	if err := gl32.Init(); err != nil {
-		fmt.Println("Could not initialize GL 3.2 (non-fatal)")
-	}
-
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	fmt.Println("OpenGL version", version)
-
-	// Query the extensions to determine if we can enable the debug callback
-	var numExtensions int32
-	gl.GetIntegerv(gl.NUM_EXTENSIONS, &numExtensions)
-
-	extensions := make(map[string]bool)
-	for i := int32(0); i < numExtensions; i++ {
-		extension := gl.GoStr(gl.GetStringi(gl.EXTENSIONS, uint32(i)))
-		extensions[extension] = true
-	}
-
-	if _, ok := extensions["GL_ARB_debug_output"]; ok {
-		gl.Enable(gl.DEBUG_OUTPUT_SYNCHRONOUS_ARB)
-		gl.DebugMessageCallbackARB(gl.DebugProc(glDebugCallback), gl.Ptr(nil))
-		// Trigger an error to demonstrate debug output
-		gl.Enable(gl.CONTEXT_FLAGS)
-	}
 
 	// Configure the vertex and fragment shaders
 	program, err := newProgram(vertexShader, fragmentShader)
