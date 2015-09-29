@@ -6,7 +6,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"image"
 	"image/draw"
@@ -21,8 +20,8 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-const WindowWidth = 800
-const WindowHeight = 600
+const windowWidth = 800
+const windowHeight = 600
 
 func init() {
 	// GLFW event handling must run on the main OS thread
@@ -40,7 +39,8 @@ func main() {
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
-	window, err := glfw.CreateWindow(WindowWidth, WindowHeight, "Cube", nil, nil)
+	window, err := glfw.CreateWindow(windowWidth, windowHeight, "Cube", nil, nil)
+
 	if err != nil {
 		panic(err)
 	}
@@ -56,12 +56,14 @@ func main() {
 
 	// Configure the vertex and fragment shaders
 	program, err := newProgram(vertexShader, fragmentShader)
+
 	if err != nil {
 		panic(err)
 	}
+
 	gl.UseProgram(program)
 
-	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(WindowWidth)/WindowHeight, 0.1, 10.0)
+	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(windowWidth)/windowHeight, 0.1, 10.0)
 	projectionUniform := gl.GetUniformLocation(program, gl.Str("projection\x00"))
 	gl.UniformMatrix4fv(projectionUniform, 1, false, &projection[0])
 
@@ -164,7 +166,7 @@ func newProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error)
 		log := strings.Repeat("\x00", int(logLength+1))
 		gl.GetProgramInfoLog(program, logLength, nil, gl.Str(log))
 
-		return 0, errors.New(fmt.Sprintf("failed to link program: %v", log))
+		return 0, fmt.Errorf("failed to link program: %v", log)
 	}
 
 	gl.DeleteShader(vertexShader)
@@ -233,7 +235,7 @@ func newTexture(file string) (uint32, error) {
 	return texture, nil
 }
 
-var vertexShader string = `
+var vertexShader = `
 #version 330
 
 uniform mat4 projection;
