@@ -40,7 +40,6 @@ func main() {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 	window, err := glfw.CreateWindow(windowWidth, windowHeight, "Cube", nil, nil)
-
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +55,6 @@ func main() {
 
 	// Configure the vertex and fragment shaders
 	program, err := newProgram(vertexShader, fragmentShader)
-
 	if err != nil {
 		panic(err)
 	}
