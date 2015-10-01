@@ -1,3 +1,8 @@
+// Copyright 2014 The go-gl Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Renders a simple static triangle using GLFW 3.1 and OpenGL 4.1 core forward-compatible profile.
 package main
 
 import (
@@ -39,10 +44,10 @@ func main() {
 
 	initGlfw()
 	setOpenGlVersion()
-	var win = makeWindow()
+	win := makeWindow()
 	printOpenGlVersionInfo()
 
-	var vao = createVao()
+	vao := createVao()
 
 	gl.Viewport(0, 0, windowWidth, windowHeight)
 
@@ -64,7 +69,7 @@ func drawLoop(win *glfw.Window, vao uint32, shader uint32) {
 }
 
 func getPoints() []float32 {
-	var points = []float32{
+	points := []float32{
 		-0.75, -0.75, 0,
 		0.75, -0.75, 0,
 		-0.75, 0.75, 0,
@@ -147,7 +152,5 @@ func makeWindow() *glfw.Window {
 	win.MakeContextCurrent()
 	gl.ClearColor(1.0, 1.0, 1.0, 1.0)
 
-	gl.Enable(gl.DEPTH_TEST)
-	gl.DepthFunc(gl.LESS)
 	return win
 }
