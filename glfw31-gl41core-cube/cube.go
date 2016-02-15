@@ -7,6 +7,7 @@ package main
 
 import (
 	"fmt"
+	"go/build"
 	"image"
 	"image/draw"
 	_ "image/png"
@@ -81,7 +82,7 @@ func main() {
 	// Load the texture
 	texture, err := newTexture("square.png")
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	// Configure the vertex data
@@ -198,7 +199,7 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 func newTexture(file string) (uint32, error) {
 	imgFile, err := os.Open(file)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("texture %q not found on disk: %v", file, err)
 	}
 	img, _, err := image.Decode(imgFile)
 	if err != nil {
@@ -314,4 +315,27 @@ var cubeVertices = []float32{
 	1.0, -1.0, 1.0, 1.0, 1.0,
 	1.0, 1.0, -1.0, 0.0, 0.0,
 	1.0, 1.0, 1.0, 0.0, 1.0,
+}
+
+// Set the working directory to the root of Go package, so that its assets can be accessed.
+func init() {
+	dir, err := importPathToDir("github.com/go-gl/examples/glfw31-gl41core-cube")
+	if err != nil {
+		log.Fatalln("Unable to find Go package in your GOPATH, it's needed to load assets:", err)
+	}
+	err = os.Chdir(dir)
+	if err != nil {
+		log.Panicln("os.Chdir:", err)
+	}
+}
+
+// importPathToDir resolves the absolute path from importPath.
+// There doesn't need to be a valid Go package inside that import path,
+// but the directory must exist.
+func importPathToDir(importPath string) (string, error) {
+	p, err := build.Import(importPath, "", build.FindOnly)
+	if err != nil {
+		return "", err
+	}
+	return p.Dir, nil
 }
