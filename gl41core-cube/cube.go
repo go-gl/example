@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Renders a textured spinning cube using GLFW 3.1 and OpenGL 4.1 core forward-compatible profile.
+// Renders a textured spinning cube using GLFW 3 and OpenGL 4.1 core forward-compatible profile.
 package main
 
 import (
@@ -17,7 +17,7 @@ import (
 	"strings"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/go-gl/glfw/v3.1/glfw"
+	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -320,7 +320,7 @@ var cubeVertices = []float32{
 
 // Set the working directory to the root of Go package, so that its assets can be accessed.
 func init() {
-	dir, err := importPathToDir("github.com/go-gl/examples/glfw31-gl41core-cube")
+	dir, err := importPathToDir("github.com/go-gl/examples/gl41core-cube")
 	if err != nil {
 		log.Fatalln("Unable to find Go package in your GOPATH, it's needed to load assets:", err)
 	}

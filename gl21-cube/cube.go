@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Renders a textured spinning cube using GLFW 3.1 and OpenGL 2.1.
+// Renders a textured spinning cube using GLFW 3 and OpenGL 2.1.
 package main
 
 import (
@@ -15,7 +15,7 @@ import (
 	"runtime"
 
 	"github.com/go-gl/gl/v2.1/gl"
-	"github.com/go-gl/glfw/v3.1/glfw"
+	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
 var (
@@ -206,7 +206,7 @@ func drawScene() {
 
 // Set the working directory to the root of Go package, so that its assets can be accessed.
 func init() {
-	dir, err := importPathToDir("github.com/go-gl/examples/glfw31-gl21-cube")
+	dir, err := importPathToDir("github.com/go-gl/examples/gl21-cube")
 	if err != nil {
 		log.Fatalln("Unable to find Go package in your GOPATH, it's needed to load assets:", err)
 	}
