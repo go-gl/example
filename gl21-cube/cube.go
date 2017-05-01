@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Renders a textured spinning cube using GLFW 3 and OpenGL 2.1.
-package main
+package main // import "github.com/go-gl/example/gl21-cube"
 
 import (
 	"go/build"
