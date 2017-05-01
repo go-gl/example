@@ -1,4 +1,4 @@
-# go-gl Examples [![Build Status](https://travis-ci.org/go-gl/examples.svg?branch=master)](https://travis-ci.org/go-gl/examples) [![GoDoc](https://godoc.org/github.com/go-gl/examples?status.svg)](https://godoc.org/github.com/go-gl/examples)
+# go-gl Examples [![Build Status](https://travis-ci.org/go-gl/example.svg?branch=master)](https://travis-ci.org/go-gl/example) [![GoDoc](https://godoc.org/github.com/go-gl/example?status.svg)](https://godoc.org/github.com/go-gl/example)
 
 Basic Usage
 -----------

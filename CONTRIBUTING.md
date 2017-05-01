@@ -1,5 +1,5 @@
-Contributing to go-gl/examples
-==============================
+Contributing to go-gl/example
+=============================
 
 We appreciate your help!
 

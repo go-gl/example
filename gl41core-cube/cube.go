@@ -320,7 +320,7 @@ var cubeVertices = []float32{
 
 // Set the working directory to the root of Go package, so that its assets can be accessed.
 func init() {
-	dir, err := importPathToDir("github.com/go-gl/examples/gl41core-cube")
+	dir, err := importPathToDir("github.com/go-gl/example/gl41core-cube")
 	if err != nil {
 		log.Fatalln("Unable to find Go package in your GOPATH, it's needed to load assets:", err)
 	}
