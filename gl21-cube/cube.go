@@ -6,13 +6,15 @@
 package main // import "github.com/go-gl/example/gl21-cube"
 
 import (
-	"go/build"
 	"image"
 	"image/draw"
 	_ "image/png"
 	"log"
 	"os"
+	"path/filepath"
 	"runtime"
+
+	"golang.org/x/tools/go/packages"
 
 	"github.com/go-gl/gl/v2.1/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -220,9 +222,10 @@ func init() {
 // There doesn't need to be a valid Go package inside that import path,
 // but the directory must exist.
 func importPathToDir(importPath string) (string, error) {
-	p, err := build.Import(importPath, "", build.FindOnly)
+	c := packages.Config{Mode: packages.LoadFiles}
+	p, err := packages.Load(&c, importPath)
 	if err != nil {
 		return "", err
 	}
-	return p.Dir, nil
+	return filepath.Dir(p[0].GoFiles[0]), nil
 }
