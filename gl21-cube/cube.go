@@ -24,6 +24,8 @@ var (
 	rotationY float32
 )
 
+const width, height = 800, 600
+
 func init() {
 	// GLFW event handling must run on the main OS thread
 	runtime.LockOSThread()
@@ -38,7 +40,7 @@ func main() {
 	glfw.WindowHint(glfw.Resizable, glfw.False)
 	glfw.WindowHint(glfw.ContextVersionMajor, 2)
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
-	window, err := glfw.CreateWindow(800, 600, "Cube", nil, nil)
+	window, err := glfw.CreateWindow(width, height, "Cube", nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -115,7 +117,8 @@ func setupScene() {
 
 	gl.MatrixMode(gl.PROJECTION)
 	gl.LoadIdentity()
-	gl.Frustum(-1, 1, -1, 1, 1.0, 10.0)
+	f := ((float64(width) / height) - 1) / 2
+	gl.Frustum(-1-f, 1+f, -1, 1, 1.0, 10.0)
 	gl.MatrixMode(gl.MODELVIEW)
 	gl.LoadIdentity()
 }
