@@ -1,4 +1,4 @@
-# go-gl Examples [![Build Status](https://github.com/go-gl/example/actions/workflows/main/badge.svg)](https://github.com/go-gl/example/actions/workflows/main.yml)
+# go-gl Examples [![Build Status](https://github.com/go-gl/example/actions/workflows/main.yml/badge.svg)](https://github.com/go-gl/example/actions/workflows/main.yml)
 
 Basic Usage
 -----------
