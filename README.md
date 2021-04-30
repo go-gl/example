@@ -1,4 +1,4 @@
-# go-gl Examples [![Build Status](https://travis-ci.org/go-gl/example.svg?branch=master)](https://travis-ci.org/go-gl/example) [![GoDoc](https://godoc.org/github.com/go-gl/example?status.svg)](https://godoc.org/github.com/go-gl/example)
+# go-gl Examples [![Build Status](https://github.com/go-gl/example/actions/workflows/main/badge.svg)](https://github.com/go-gl/example/actions/workflows/main.yml)
 
 Basic Usage
 -----------
