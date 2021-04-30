@@ -6,6 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mesa-utils mesa-common-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libgl1-mesa-dev libglfw3-dev
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2.5.2
         with:
