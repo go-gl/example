@@ -1,0 +1,14 @@
+run:
+  deadline: 5m
+
+linters:
+  enable:
+    - gocritic
+
+issues:
+  exclude-use-default: false # disable filtering of defaults for better zero-issue policy
+  exclude:
+    # There is a lot of pointer-mangling happening here, so disable this govet warning
+    - possible misuse of unsafe.Pointer
+  max-per-linter: 0 # disable limit; report all issues of a linter
+  max-same-issues: 0 # disable limit; report all issues of the same issue
