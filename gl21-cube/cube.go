@@ -123,9 +123,6 @@ func setupScene() {
 	gl.LoadIdentity()
 }
 
-func destroyScene() {
-}
-
 func drawScene() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
