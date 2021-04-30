@@ -1,10 +1,6 @@
 run:
   deadline: 5m
 
-linters:
-  enable:
-    - gocritic
-
 issues:
   exclude-use-default: false # disable filtering of defaults for better zero-issue policy
   exclude:
