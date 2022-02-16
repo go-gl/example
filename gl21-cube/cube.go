@@ -117,7 +117,7 @@ func setupScene() {
 
 	gl.MatrixMode(gl.PROJECTION)
 	gl.LoadIdentity()
-	f := ((float64(width) / height) - 1) / 2
+	f := float64(width)/height - 1
 	gl.Frustum(-1-f, 1+f, -1, 1, 1.0, 10.0)
 	gl.MatrixMode(gl.MODELVIEW)
 	gl.LoadIdentity()
