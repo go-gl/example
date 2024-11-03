@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Renders a textured spinning cube using GLFW 3 and OpenGL 2.1.
-package main // import "github.com/go-gl/example/gl21-cube"
+// gl21-cube renders a textured spinning cube using GLFW 3 and OpenGL 2.1.
+package main
 
 import (
-	"go/build"
+	"embed"
 	"image"
 	"image/draw"
 	_ "image/png"
 	"log"
-	"os"
 	"runtime"
 
 	"github.com/go-gl/gl/v2.1/gl"
@@ -62,7 +61,7 @@ func main() {
 }
 
 func newTexture(file string) uint32 {
-	imgFile, err := os.Open(file)
+	imgFile, err := assetFS.Open(file)
 	if err != nil {
 		log.Fatalf("texture %q not found on disk: %v\n", file, err)
 	}
@@ -204,25 +203,5 @@ func drawScene() {
 	gl.End()
 }
 
-// Set the working directory to the root of Go package, so that its assets can be accessed.
-func init() {
-	dir, err := importPathToDir("github.com/go-gl/example/gl21-cube")
-	if err != nil {
-		log.Fatalln("Unable to find Go package in your GOPATH, it's needed to load assets:", err)
-	}
-	err = os.Chdir(dir)
-	if err != nil {
-		log.Panicln("os.Chdir:", err)
-	}
-}
-
-// importPathToDir resolves the absolute path from importPath.
-// There doesn't need to be a valid Go package inside that import path,
-// but the directory must exist.
-func importPathToDir(importPath string) (string, error) {
-	p, err := build.Import(importPath, "", build.FindOnly)
-	if err != nil {
-		return "", err
-	}
-	return p.Dir, nil
-}
+//go:embed square.png
+var assetFS embed.FS
