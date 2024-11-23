@@ -177,7 +177,7 @@ func newProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error)
 func compileShader(source string, shaderType uint32) (uint32, error) {
 	shader := gl.CreateShader(shaderType)
 
-	csources, free := gl.Strs(source)
+	csources, free := gl.Strs(source + "\x00")
 	gl.ShaderSource(shader, 1, csources, nil)
 	free()
 	gl.CompileShader(shader)
@@ -251,7 +251,7 @@ void main() {
     fragTexCoord = vertTexCoord;
     gl_Position = projection * camera * model * vec4(vert, 1);
 }
-` + "\x00"
+`
 
 var fragmentShader = `
 #version 330
@@ -265,7 +265,7 @@ out vec4 outputColor;
 void main() {
     outputColor = texture(tex, fragTexCoord);
 }
-` + "\x00"
+`
 
 var cubeVertices = []float32{
 	//  X, Y, Z, U, V
